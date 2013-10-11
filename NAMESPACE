@@ -1,0 +1,8 @@
+export(SSRidgeFusedCV)
+export(SSRidgeFused)
+export(RidgeFusedCV)
+export(RidgeFused)
+exportClasses("RidgeFusion","RidgeFusionCV","RidgeFusedQDA","SSRidgeFusion")
+export(FusedQDA)
+exportMethods(predict,print)
+
