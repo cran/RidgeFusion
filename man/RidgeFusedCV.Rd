@@ -3,7 +3,7 @@
 \title{Ridged Fused Validation Likelihood}
 \description{Calculates the Valdiation Likelihood Score for candidate tuning parameters}
 \usage{
-RidgeFusedCV(X,lambda1,lambda2,Fold,tol=10^(-4),scaleCV=FALSE,INF=FALSE)
+RidgeFusedCV(X,lambda1,lambda2,Fold,tol=10^-6,warm.start=TRUE,scaleCV=FALSE,INF=FALSE)
 }
 \arguments{
   \item{X}{A list of length J that contains the data for each class }
@@ -11,6 +11,7 @@ RidgeFusedCV(X,lambda1,lambda2,Fold,tol=10^(-4),scaleCV=FALSE,INF=FALSE)
   \item{lambda2}{A vector with all possible Ridge Fusion tuning parameters}
   \item{Fold}{A list of length K, the number of folds, where each element is a list of length of the number of classes that contains the indices for the kth fold of the jth class. Fold[[1]][[1]] contains the indices of the first fold in class 1, Fold[[1]][[2]] contains the indices of the first fold of class 2}
   \item{tol}{Convergence tolerance for blockwise coordinate descent algorithm at each grid point}
+  \item{warm.start}{A True/False variable, that indicates if warm.starts should be used}
   \item{scaleCV}{If \code{TRUE} scale invariant method is used}  
   \item{INF}{If \code{TRUE} sets all inverse covariance matrices equal in the result}
 } \value{

@@ -123,19 +123,12 @@ print.RidgeFusionCV<-function(x,...){
 
 setMethod("print","RidgeFusionCV",print.RidgeFusionCV)
 	
-RidgeFusedCV<-function(X,lambda1,lambda2,Fold,tol=10^(-4),scaleCV=FALSE,INF=FALSE){
+RidgeFusedCV<-function(X,lambda1,lambda2,Fold,tol=10^-6,warm.start=TRUE,scaleCV=FALSE,INF=FALSE){
 	
 	S2=lapply(X,function(x){(dim(x)-1)*cov(x)/dim(x)})
 	L1=length(lambda1)
 	L2=length(lambda2)
 	nc=lapply(X,function(x){dim(x)[1]})
-	Inits=vector("list",L1*L2)
-	for(i in 1:L1){
-		for(j in 1:L2){
-			Inits[[L2*(i-1)+j]]=0
-	Inits[[L2*(i-1)+j]]=RidgeFused(S2,lambda1[i],lambda2[j],unlist(nc),scale=scaleCV)$Omega
-	}
-	}
 	J=length(X)
 	nc=lapply(X,function(x){dim(x)[1]})
 	p=dim(X[[1]])[2]
@@ -160,7 +153,14 @@ RidgeFusedCV<-function(X,lambda1,lambda2,Fold,tol=10^(-4),scaleCV=FALSE,INF=FALS
 			TV2[[k]]=lapply(XTest[[k]],function(x){(dim(x)[1]-1)*cov(x)/(dim(x)[1])})
 		}
 		
-		
+	Inits=vector("list",L1*L2)
+	for(i in 1:L1){
+		for(j in 1:L2){
+			Inits[[L2*(i-1)+j]]=0
+	Inits[[L2*(i-1)+j]]=RidgeFusedL(S[[k]],lambda1[i],Inf,##lambda2[j],
+	tole=tol,ws=NULL,scaleL=scaleCV)
+	}
+	}
 		Rest=matrix(0,length(lambda1),length(lambda2))
 	for(m in 1:length(lambda1)){
 		OmegEst=0
@@ -169,7 +169,13 @@ RidgeFusedCV<-function(X,lambda1,lambda2,Fold,tol=10^(-4),scaleCV=FALSE,INF=FALS
 	OmegEst=list(0,0)		
 	OmegEst2=OmegEst
 for(k in 1:K){		
-	OmegEst[[k]]=RidgeFusedL(S[[k]],lambda1[m],lambda2[l],tole=tol,ws=Inits[[L2*(m-1)+l]],scaleL=scaleCV)
+	if(warm.start==TRUE){
+	OmegEst[[k]]=RidgeFusedL(S[[k]],lambda1[m],lambda2[l],tole=tol,ws=Inits[[L2*(m-1)+l]],
+	scaleL=scaleCV)}else{
+		OmegEst[[k]]=RidgeFusedL(S[[k]],lambda1[m],lambda2[l],tole=tol,ws=NULL,
+	scaleL=scaleCV)
+		
+		}
 
 				for(j in 1:J){
 			M=M+(length(Fold[[k]][[j]])/2)*(sum(diag(TV2[[k]][[j]]%*%OmegEst[[k]][[j]]))-determinant(OmegEst[[k]][[j]])$mod)
